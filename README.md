@@ -21,8 +21,8 @@ Idea
 ----
 1. Provide Unit Test
 2. User Interface for possible schedule
-3. New parameter for job [Parameter] such like, parameter passing and communication between one job and another job task.
-4. New parameter for job [Condition] such like, condition watching file change.
+3. New parameter for job *Parameter* such like, parameter passing and communication between one job and another job task.
+4. New parameter for job *Condition* such like, condition watching file change.
 
 Compability
 -----------
@@ -31,8 +31,8 @@ This function is provide WITHOUT Warranty, use your own risk. Basically, this fu
 Usage
 -----
 Test with Install project on eclipse, configuration config/ap.properties :
-1. Locating [config/ap.xml.example] to [E:/ap.xml]
-2. Set properties [jobpath] to [E:/ap.xml]
+1. Locating *config/ap.xml.example* to *E:/ap.xml*
+2. Set properties *jobpath* to *E:/ap.xml*
 3. Running ApMain class
 4. Try change ap.xml time with your actual time for see the job working:
 ```xml
@@ -42,10 +42,10 @@ Test with Install project on eclipse, configuration config/ap.properties :
 	<time>13:57</time>
 	<day></day>
 ```
-5. Change [command] with batch script target :
+5. Change *command* with batch script target :
 ```xml
 	<command>cmd /c start E:\\script\\JB00A1.bat</command>
 	<presentCommand>job:JB00A2</presentCommand>
 ```
-Actually, No Difference between [command] and [presentCommand]. but [presentCommand] can use for call another job task after [command] finish executed. To call another job simply use syntax :
-[job:<JOBID>]
+Actually, No Difference between *command* and *presentCommand*. but *presentCommand* can use for call another job task after *command* finish executed. To call another job simply use syntax :
+*job:JOBID*
