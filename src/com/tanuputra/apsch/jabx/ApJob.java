@@ -84,6 +84,23 @@ public class ApJob {
 	public void setPresentCommand(String _presentCommand) {
 		this._presentCommand = _presentCommand;
 	}
+
+	public String getDay() {
+		return _day;
+	}
+
+	public void setDay(String _day) {
+		this._day = _day;
+	}
+	
+	public String getGroupId() {
+		return _day;
+	}
+
+	public void setGroupId(String _groupId) {
+		this._groupId = _groupId;
+	}
+
 	public ApJob(String id, String title, String description, String category) {
 		_id = id;
 		_title = title;
@@ -151,6 +168,7 @@ public class ApJob {
 	private String _duedate;
 	private String _command;
 	private String _presentCommand;
+	private String _groupId;
 
 	@Override
 	public String toString() {
