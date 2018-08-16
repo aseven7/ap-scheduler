@@ -10,22 +10,22 @@ The goal of this program is making scheduling system as simple as possible (in t
 3. Scheduling heavy logic.
 4. Chaining process for cutting complexity.
 
-Functional
-----------
-Some features already work :
+Features
+--------
+Support scheduling functions and features :
 1. ap.xml used as preference schedule of task.
 2. ap.xml in-time editable and auto reloading schedule on live time.
 3. Support chaining process, in terms call next job process after current job finish.
 
-Idea
+TODo
 ----
 1. Provide Unit Test
 2. User Interface for possible schedule
 3. New parameter for job *Parameter* such like, parameter passing and communication between one job and another job task.
 4. New parameter for job *Condition* such like, condition watching file change.
 
-Compability
------------
+Compatibility
+-------------
 This function is provide WITHOUT Warranty, use your own risk. Basically, this function still on progress made for personally backup itself. I writing using eclipse IDE (Oxygen) Windows 10. Never test in Unix system. But I also target this function to work in UNIX (after I started Unit Test).
 
 Usage

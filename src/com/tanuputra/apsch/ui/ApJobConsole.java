@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.tanuputra.apsch.core.ApJobManager;
 import com.tanuputra.apsch.jabx.ApJob;
+import com.tanuputra.apsch.jabx.ApJobGroupXml;
 import com.tanuputra.apsch.jabx.ApJobXml;
 import com.tanuputra.apsch.jabx.ApXml;
 import com.tanuputra.apsch.util.ApUtil;
@@ -27,7 +28,6 @@ public class ApJobConsole extends JFrame {
 	private final static Logger _logger = LogManager.getLogger();
 	private JTable _jobTableGrid;
 	private JTable _jobGroupTableGrid;
-	private DefaultTableModel _defaultTableModel;
 	private Properties _apProp;
 
 	public ApJobConsole() {
@@ -35,13 +35,16 @@ public class ApJobConsole extends JFrame {
 
 		loadUI();
 		loadJobList();
+		loadJobGroupList();
 	}
 
 	public void loadJobList() {
+		DefaultTableModel defaultTableModel = new DefaultTableModel();
+		
 		// Table header
 		final String columnString = _apProp.getProperty("ap.console.columns");
 		String[] columns = columnString.split(",");
-		_defaultTableModel.setColumnIdentifiers(columns);
+		defaultTableModel.setColumnIdentifiers(columns);
 
 		// Table record
 		final ApXml apXml = ApUtil.getJobXML(_logger, _apProp);
@@ -58,29 +61,32 @@ public class ApJobConsole extends JFrame {
 				}
 			}
 
-			_defaultTableModel.addRow(record);
+			defaultTableModel.addRow(record);
 		}
 
-		_defaultTableModel.fireTableStructureChanged();
+		defaultTableModel.fireTableStructureChanged();
+		_jobTableGrid.setModel(defaultTableModel);
 		_jobTableGrid.validate();
 
 	}
 	
 
 	public void loadJobGroupList() {
+		DefaultTableModel defaultTableModel = new DefaultTableModel();
+		
 		// Table header
-		final String columnString = _apProp.getProperty("ap.console.columns");
+		final String columnString = _apProp.getProperty("ap.console.columngroups");
 		String[] columns = columnString.split(",");
-		_defaultTableModel.setColumnIdentifiers(columns);
+		defaultTableModel.setColumnIdentifiers(columns);
 
 		// Table record
 		final ApXml apXml = ApUtil.getJobXML(_logger, _apProp);
-		for (ApJobXml xml : apXml.jobs.getJob()) {
+		for (ApJobGroupXml xml : apXml.jobGroups.getJobGroup()) {
 			Vector<String> record = new Vector<String>();
 
 			for (String columnName : columns) {
 				try {
-					Method method = ApJobXml.class.getMethod(ApUtil.getMethodGet(columnName));
+					Method method = ApJobGroupXml.class.getMethod(ApUtil.getMethodGet(columnName));
 					final Object returnValue = method.invoke(xml);
 					record.add(returnValue.toString());
 				} catch (Exception e) {
@@ -88,17 +94,18 @@ public class ApJobConsole extends JFrame {
 				}
 			}
 
-			_defaultTableModel.addRow(record);
+			defaultTableModel.addRow(record);
 		}
 
-		_defaultTableModel.fireTableStructureChanged();
-		_jobTableGrid.validate();
+		defaultTableModel.fireTableStructureChanged();
+		_jobGroupTableGrid.setModel(defaultTableModel);
+		_jobGroupTableGrid.validate();
 
 	}
 
 	public void loadUI() {
-		_defaultTableModel = new DefaultTableModel();
-		_jobTableGrid = new JTable(_defaultTableModel);
+		_jobTableGrid = new JTable();
+		_jobGroupTableGrid = new JTable();
 
 		final Dimension screenDimension = new Dimension(1000, 500);
 
@@ -113,6 +120,8 @@ public class ApJobConsole extends JFrame {
 		this.getContentPane().add(new JScrollPane(_jobTableGrid, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS), BorderLayout.NORTH);
 
+		this.getContentPane().add(new JScrollPane(_jobGroupTableGrid, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS), BorderLayout.SOUTH);
 		this.pack();
 		this.setLocationRelativeTo(null);
 	}
