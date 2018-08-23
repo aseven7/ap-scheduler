@@ -1,33 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN">
-
-	<!-- Author: Crunchify.com -->
+<Configuration packages="com.tanuputra.apsch.logger"
+	status="WARN">
 	<Appenders>
+		<ApListAppender name="customAppender">
+			<PatternLayout
+				pattern="%d{dd/MMM/yyyy HH:mm:ss,SSS} %-10p %c:%L - %msg%n" />
+		</ApListAppender>
 		<Console name="Console" target="SYSTEM_OUT">
-			<PatternLayout pattern="%d{dd/MMM/yyyy HH:mm:ss,SSS} %-10p %c.java:%L - %msg%n" />
+			<PatternLayout
+				pattern="%d{dd/MMM/yyyy HH:mm:ss,SSS} %-10p %c:%L - %msg%n" />
 		</Console>
-
 		<RollingFile name="FileOutput" filename="E:/log/trace.log"
 			filepattern="%d{yyyyMMddHHmmss}-apschedule.log">
-			<PatternLayout pattern="%d{dd/MMM/yyyy HH:mm:ss,SSS} %-10p %c.java:%L - %msg%n" />
+			<PatternLayout
+				pattern="%d{dd/MMM/yyyy HH:mm:ss,SSS} %-10p %c:%L - %msg%n" />
 			<Policies>
 				<SizeBasedTriggeringPolicy size="50 MB" />
 			</Policies>
 			<DefaultRolloverStrategy max="20" />
 		</RollingFile>
-
 	</Appenders>
 	<Loggers>
 		<Root level="info">
 			<AppenderRef ref="Console" />
 			<AppenderRef ref="FileOutput" />
+			<AppenderRef ref="customAppender" />
 		</Root>
 		<Root level="error">
 			<AppenderRef ref="Console" />
 			<AppenderRef ref="FileOutput" />
+			<AppenderRef ref="customAppender" />
 		</Root>
 		<Root level="debug">
 			<AppenderRef ref="Console" />
+			<AppenderRef ref="customAppender" />
 		</Root>
 	</Loggers>
 </Configuration>

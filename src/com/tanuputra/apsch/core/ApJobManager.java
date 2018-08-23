@@ -15,6 +15,6 @@ public class ApJobManager extends HashMap<String, ApJob> {
 
 	public void add(ApJob job) {
 		this.put(job.getId(), job);
-		_logger.debug("Registered to job manager job instance : " + job);
+		_logger.debug("Registering job instance : " + job);
 	}
 }

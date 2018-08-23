@@ -1,10 +1,9 @@
 package com.tanuputra.apsch.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -12,12 +11,12 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.tanuputra.apsch.core.ApJobManager;
-import com.tanuputra.apsch.jabx.ApJob;
 import com.tanuputra.apsch.jabx.ApJobGroupXml;
 import com.tanuputra.apsch.jabx.ApJobXml;
 import com.tanuputra.apsch.jabx.ApXml;
@@ -40,7 +39,7 @@ public class ApJobConsole extends JFrame {
 
 	public void loadJobList() {
 		DefaultTableModel defaultTableModel = new DefaultTableModel();
-		
+
 		// Table header
 		final String columnString = _apProp.getProperty("ap.console.columns");
 		String[] columns = columnString.split(",");
@@ -63,17 +62,17 @@ public class ApJobConsole extends JFrame {
 
 			defaultTableModel.addRow(record);
 		}
-
+		
+		resizeColumnWidth(_jobTableGrid);
 		defaultTableModel.fireTableStructureChanged();
 		_jobTableGrid.setModel(defaultTableModel);
 		_jobTableGrid.validate();
 
 	}
-	
 
 	public void loadJobGroupList() {
 		DefaultTableModel defaultTableModel = new DefaultTableModel();
-		
+
 		// Table header
 		final String columnString = _apProp.getProperty("ap.console.columngroups");
 		String[] columns = columnString.split(",");
@@ -105,7 +104,9 @@ public class ApJobConsole extends JFrame {
 
 	public void loadUI() {
 		_jobTableGrid = new JTable();
+		_jobTableGrid.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		_jobGroupTableGrid = new JTable();
+		_jobGroupTableGrid.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
 		final Dimension screenDimension = new Dimension(1000, 500);
 
@@ -115,15 +116,29 @@ public class ApJobConsole extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setPreferredSize(screenDimension);
 		this.setVisible(true);
-		
 
 		this.getContentPane().add(new JScrollPane(_jobTableGrid, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS), BorderLayout.NORTH);
+				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS), BorderLayout.EAST);
 
 		this.getContentPane().add(new JScrollPane(_jobGroupTableGrid, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS), BorderLayout.SOUTH);
+				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS), BorderLayout.WEST);
 		this.pack();
 		this.setLocationRelativeTo(null);
+	}
+
+	public void resizeColumnWidth(JTable table) {
+		final TableColumnModel columnModel = table.getColumnModel();
+		for (int column = 0; column < table.getColumnCount(); column++) {
+			int width = 15; // Min width
+			for (int row = 0; row < table.getRowCount(); row++) {
+				TableCellRenderer renderer = table.getCellRenderer(row, column);
+				Component comp = table.prepareRenderer(renderer, row, column);
+				width = Math.max(comp.getPreferredSize().width + 1, width);
+			}
+			if (width > 300)
+				width = 300;
+			columnModel.getColumn(column).setPreferredWidth(width);
+		}
 	}
 
 	public static void main(String[] args) {
