@@ -17,7 +17,7 @@ Support scheduling functions and features :
 2. ap.xml in-time editable and auto reloading schedule on live time.
 3. Support chaining process, in terms call next job process after current job finish.
 
-TODo
+TODO
 ----
 1. Provide Unit Test
 2. User Interface for possible schedule
@@ -47,5 +47,7 @@ Test with Install project on eclipse, configuration config/ap.properties :
 	<command>cmd /c start E:\\script\\JB00A1.bat</command>
 	<presentCommand>job:JB00A2</presentCommand>
 ```
+6. Setup HttpClient for access schedule and logs in user friendly format (default : http://localhost:8080).
+
 Actually, No Difference between *command* and *presentCommand*. but *presentCommand* can use for call another job task after *command* finish executed. To call another job simply use syntax :
 *job:JOBID*
