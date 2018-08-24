@@ -41,7 +41,7 @@ public class ApUtil {
 	}
 
 	public static ApXml getJobXML(Logger logger, Properties apProp) {
-		final String jobFilePath = apProp.getProperty("jobpath");
+		final String jobFilePath = apProp.getProperty("ap.jobpath");
 		ApXml apXml = null;
 
 		try {
@@ -60,7 +60,7 @@ public class ApUtil {
 
 	public static ApJobManager getJobManager(Logger logger, Properties apProp) {
 		ApJobManager jobManager = new ApJobManager(logger);
-		final String jobFilePath = apProp.getProperty("jobpath");
+		final String jobFilePath = apProp.getProperty("ap.jobpath");
 
 		try {
 			final JAXBContext jaxbContext = JAXBContext.newInstance(ApXml.class);

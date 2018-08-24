@@ -14,7 +14,6 @@ import com.tanuputra.apsch.util.ApUtil;
 public class ApMain implements Runnable {
 	private static Logger _logger;
 	private static ApJobManager _apJobManager;
-	private static String _apEnv = "Development";
 	public static Thread _apMainThread;
 	public static Thread _apAgentThread;
 	public static Thread _apWatcherThread;
@@ -30,10 +29,6 @@ public class ApMain implements Runnable {
 	private static void loadApScheduleList() {
 		_logger.info("Loading Job Manager");
 		_apJobManager = ApUtil.getJobManager(_logger, _apProp);
-	}
-
-	public static void loadApProperties() {
-		ApMain._apEnv = _apProp.getProperty("env");
 	}
 
 	public void initLogging() {
@@ -58,9 +53,6 @@ public class ApMain implements Runnable {
 
 		initLogging();
 		
-		// Loading Ap Properties
-		loadApProperties();
-
 		// Loading AP Schedule List
 		loadApScheduleList();
 

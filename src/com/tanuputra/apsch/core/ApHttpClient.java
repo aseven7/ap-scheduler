@@ -4,17 +4,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Enumeration;
 import java.util.Properties;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.message.MessageFactory;
 
 import com.google.gson.Gson;
 import com.tanuputra.apsch.jabx.ApXml;
 import com.tanuputra.apsch.logger.ApListAppender;
 import com.tanuputra.apsch.runtime.ApMain;
+import com.tanuputra.apsch.util.ApConstants;
 import com.tanuputra.apsch.util.ApUtil;
 
 import fi.iki.elonen.NanoHTTPD;
@@ -55,6 +53,10 @@ public class ApHttpClient extends NanoHTTPD {
 				ApXml apXml = ApUtil.getJobXML(_logger, _apProp);
 				final String result = gson.toJson(apXml.jobGroups);
 				return newFixedLengthResponse(NanoHTTPD.Response.Status.OK, "text/json", result);
+			} else if (sessionUri.equals("/api/config.json")) {
+				_apProp = ApUtil.getApProp();
+				final String result  = gson.toJson(_apProp.entrySet());
+				return newFixedLengthResponse(NanoHTTPD.Response.Status.OK, "text/json", result);
 			}
 		} catch (IOException e) {
 			final String errorMsg = "Error opening, Please see console log !";
@@ -66,13 +68,18 @@ public class ApHttpClient extends NanoHTTPD {
 
 	public String viewIndex() throws IOException {
 		StringBuilder content = new StringBuilder();
-		InputStream apHtmFile = ApMain.class.getResourceAsStream("/template/client.htm");
-		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(apHtmFile));
-		String line;
+		InputStream htmStream = ApMain.class.getResourceAsStream("/template/client.htm");
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(htmStream));
+		String line = null;
+		
+		// Template content
+		String env = _apProp.getProperty("ap.env", ApConstants.DEFAULT_ENV);
+		
 		while ((line = bufferedReader.readLine()) != null) {
+			line = line.replace("{env}", env);
 			content.append(line + "\n");
 		}
-		apHtmFile.close();
+		htmStream.close();
 		bufferedReader.close();
 
 		return content.toString();
