@@ -15,16 +15,16 @@ public class ApMain implements Runnable {
 	private static Logger _logger;
 	private static ApJobManager _apJobManager;
 	private static String _apEnv = "Development";
-	public static Thread apMainThread;
-	public static Thread apAgentThread;
-	public static Thread apWatcherThread;
-	public static boolean isRestarted = false;
+	public static Thread _apMainThread;
+	public static Thread _apAgentThread;
+	public static Thread _apWatcherThread;
+	public static boolean _isRestarted = false;
 	public static Properties _apProp;
 
 	public static void main(String[] args) {
 		// Running AP Main
-		apMainThread = (new Thread(new ApMain()));
-		apMainThread.start();
+		_apMainThread = (new Thread(new ApMain()));
+		_apMainThread.start();
 	}
 
 	private static void loadApScheduleList() {
@@ -41,14 +41,14 @@ public class ApMain implements Runnable {
 	}
 	
 	public synchronized static void restartApAgent() {
-		apAgentThread.interrupt();
+		_apAgentThread.interrupt();
 		
 		// Loading AP Schedule List
 		loadApScheduleList();
 		
 		// Restart new thread
-		apAgentThread = (new Thread(new ApAgent(_logger, _apJobManager)));
-		apAgentThread.start();
+		_apAgentThread = (new Thread(new ApAgent(_logger, _apJobManager)));
+		_apAgentThread.start();
 	}
 
 	@Override
@@ -65,12 +65,12 @@ public class ApMain implements Runnable {
 		loadApScheduleList();
 
 		// Running AP Agent
-		apAgentThread = (new Thread(new ApAgent(_logger, _apJobManager)));
-		apAgentThread.start();
+		_apAgentThread = (new Thread(new ApAgent(_logger, _apJobManager)));
+		_apAgentThread.start();
 
 		// Running AP Watcher
-		apWatcherThread = (new Thread(new ApWatcher(_logger)));
-		apWatcherThread.start();
+		_apWatcherThread = (new Thread(new ApWatcher(_logger)));
+		_apWatcherThread.start();
 
 		// Running Http Client
 		final String ipAddr = _apProp.getProperty("ap.httpclient.ip", "8080");
