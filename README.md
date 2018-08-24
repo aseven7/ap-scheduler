@@ -4,11 +4,9 @@ Jdk 1.6
 
 Introduction
 ------------
-The goal of this program is making scheduling system as simple as possible (in terms information logically process in business application). Such like :
-1. Process backup by arranged schedule.
-2. Daily report by schedule.
-3. Scheduling heavy logic.
-4. Chaining process for cutting complexity.
+This is an open source scheduling system, I will be very happy if it is useful for others. This system is for scheduling operation task program automatically, actually aim for easy and simple usage but with capabilities to schedule heavy work at once and related to each other.
+
+The purpose of system use is to run unix scripting operations, batches and so on. This system is designed using the Java programming language. I only tried Windows 10 but, because of the development environment in this OS. If this system is stable I will try to adapt it to the Unix system. I hope this will continue.
 
 Concept
 -------
