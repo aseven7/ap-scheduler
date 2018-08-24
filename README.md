@@ -10,6 +10,10 @@ The goal of this program is making scheduling system as simple as possible (in t
 3. Scheduling heavy logic.
 4. Chaining process for cutting complexity.
 
+Concept
+-------
+![alt text](http://prntscr.com/kmbho2 "Concept flow")
+
 Features
 --------
 Support scheduling functions and features :
