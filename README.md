@@ -12,7 +12,7 @@ The goal of this program is making scheduling system as simple as possible (in t
 
 Concept
 -------
-![alt text](http://prntscr.com/kmbho2 "Concept flow")
+![alt text](https://raw.githubusercontent.com/aseven7/ap-scheduler/master/docs/img/concept.png "Concept flow")
 
 Features
 --------
