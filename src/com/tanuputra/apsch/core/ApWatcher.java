@@ -31,14 +31,7 @@ public class ApWatcher implements Runnable {
 		
 		File apFile = new File(apFilePath);
 		if (apFile.lastModified() != ApWatcher.timestampAp) {
-			ApMain.isRestarted = true;
-			
-			ApMain.apMainThread.interrupt();
-			ApMain.apAgentThread.interrupt();
-			ApMain.apWatcherThread.interrupt();
-			
-			ApMain.apMainThread = (new Thread(new ApMain()));
-			ApMain.apMainThread.start();
+			ApMain.restartApAgent();
 		}
 	}
 	

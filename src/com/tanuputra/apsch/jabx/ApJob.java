@@ -137,7 +137,7 @@ public class ApJob {
 	}
 
 	public void disable() {
-		_active = true;
+		_active = false;
 	}
 
 	public void event(String day, String time, String date, String dueDate) {

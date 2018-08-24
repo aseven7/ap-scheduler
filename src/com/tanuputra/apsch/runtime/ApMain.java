@@ -4,9 +4,6 @@ import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.LoggerConfig;
 
 import com.tanuputra.apsch.core.ApAgent;
 import com.tanuputra.apsch.core.ApHttpClientAgent;
@@ -30,17 +27,28 @@ public class ApMain implements Runnable {
 		apMainThread.start();
 	}
 
-	private void loadApScheduleList() {
+	private static void loadApScheduleList() {
 		_logger.info("Loading Job Manager");
 		_apJobManager = ApUtil.getJobManager(_logger, _apProp);
 	}
 
-	public void loadApProperties() {
+	public static void loadApProperties() {
 		ApMain._apEnv = _apProp.getProperty("env");
 	}
 
 	public void initLogging() {
 		_logger = LogManager.getLogger();
+	}
+	
+	public synchronized static void restartApAgent() {
+		apAgentThread.interrupt();
+		
+		// Loading AP Schedule List
+		loadApScheduleList();
+		
+		// Restart new thread
+		apAgentThread = (new Thread(new ApAgent(_logger, _apJobManager)));
+		apAgentThread.start();
 	}
 
 	@Override
@@ -50,13 +58,6 @@ public class ApMain implements Runnable {
 
 		initLogging();
 		
-		if (ApMain.isRestarted) {
-			_logger.info("AP (" + _apEnv + ") schedule re-started !");
-			ApMain.isRestarted = false;
-		} else {
-			_logger.info("AP (" + _apEnv + ") schedule started !");
-		}
-
 		// Loading Ap Properties
 		loadApProperties();
 

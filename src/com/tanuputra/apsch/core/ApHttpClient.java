@@ -51,6 +51,10 @@ public class ApHttpClient extends NanoHTTPD {
 				ApXml apXml = ApUtil.getJobXML(_logger, _apProp);
 				final String result = gson.toJson(apXml.jobs);
 				return newFixedLengthResponse(NanoHTTPD.Response.Status.OK, "text/json", result);
+			} else if (sessionUri.equals("/api/jobgroup.json")) {
+				ApXml apXml = ApUtil.getJobXML(_logger, _apProp);
+				final String result = gson.toJson(apXml.jobGroups);
+				return newFixedLengthResponse(NanoHTTPD.Response.Status.OK, "text/json", result);
 			}
 		} catch (IOException e) {
 			final String errorMsg = "Error opening, Please see console log !";

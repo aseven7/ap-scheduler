@@ -1,46 +1,60 @@
 <!DOCTYPE html>
 <html ng-app="AP">
-	<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="author" content="Antony Tanuputra">
-	<title>ApSchedule (Production)</title>
-	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
-	<script type="text/javascript">
-		var tabNavigationMenuClass = {
-			tabNavigationMenu: null,
-			tabNavigationContent: null,
-			init: function() {
-				this.tabNavigationMenu = document.querySelectorAll('.tab_navigation a');
-				this.tabNavigationContent = document.querySelectorAll('.tab_navigation_content > div');
-				this.attachEvent();
-			},
-			attachEvent: function() {
-				var tabNavigationMenu = this.tabNavigationMenu;
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="author" content="Antony Tanuputra">
+<title>ApSchedule (Production)</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 
-				tabNavigationMenu.forEach(function(el) {
-					el.onclick = function(e) {
-						e.preventDefault();
-						var href = this.href;
+<script type="text/javascript">
+	var tabNavigationMenuClass = function(tabId) {
+		this.tabNavigationMenu = null;
+		this.tabNavigationContent = null;
+		this.tabId = tabId;
 
-						tabNavigationMenuClass.clearSelection();
-						tabNavigationMenuClass.selection(this);
-					};
-				});
-			},
-			selection: function(el) {
-				el.setAttribute('class', 'active');
+		this.init = function() {
+			this.tabNavigationMenu = document.querySelectorAll(this.tabId
+					+ ' .tab_navigation_menu > a');
+			this.tabNavigationContent = document.querySelectorAll(this.tabId
+					+ '.tab_navigation_content > div');
+			this.attachEvent();
+			this.clearSelection(this.tabNavigationMenu[0]);
+			this.selection(this.tabNavigationMenu[0]);
+		};
 
-				// Document content
-				var href = el.href;
-				href = href.substr(href.indexOf("#") + 1);
-				var contentDocElement = document.getElementById(href);
-				contentDocElement.setAttribute('class', 'active');
-			},
-			clearSelection: function() {
-				var tabNavigationMenu = this.tabNavigationMenu;
-				tabNavigationMenu.forEach(function(el) {
+		this.attachEvent = function() {
+			var me = this;
+
+			this.tabNavigationMenu.forEach(function(el) {
+				el.onclick = function(e) {
+					e.preventDefault();
+					var href = this.href;
+
+					me.clearSelection(e.currentTarget);
+					me.selection(e.currentTarget);
+				};
+			});
+		};
+
+		this.selection = function(el) {
+			el.setAttribute('class', 'active');
+
+			// Document content
+			var href = el.href;
+			href = href.substr(href.indexOf("#") + 1);
+			var contentDocElement = document.getElementById(href);
+			contentDocElement.setAttribute('class', 'active');
+		};
+
+		this.clearSelection = function(el) {
+			var tabNavigationMenu = el.parentElement.childNodes;
+
+			tabNavigationMenu.forEach(function(el) {
+				if (el.nodeType === Node.ELEMENT_NODE) {
 					// Navigation menu
 					el.setAttribute('class', '');
 
@@ -49,58 +63,80 @@
 					href = href.substr(href.indexOf("#") + 1);
 					var contentDocElement = document.getElementById(href);
 					contentDocElement.setAttribute('class', '');
-				});
-			}
+				}
+			});
 		};
+	};
 
-		var app = angular.module('AP', []);
-		app.controller('apController', function($scope, $http) {
-			$scope.tabNavigationMenuClass = tabNavigationMenuClass;
-			$scope.tabNavigationMenuClass.init();
-			$scope.logEvents = [];
-			$scope.jobLists = [];
-			$scope.loadLog = function() {
-				$http.get('api/logging.json')
-				.then(function(r) {
-					$scope.logEvents = [];
-					angular.forEach(r.data, function(value, key) {
-						var message = value.message.message;
-						// except ApHttpClient logger
-						if(message.indexOf('ApHttpClient') == -1) {
-							var date = new Date(value.timeMillis);
-							$scope.logEvents.unshift({
-								message: message,
-								timestamp: moment(date).format("YYYY/MM/DD HH:mm:ss")
+	var app = angular.module('AP', []);
+	app.controller('apController',
+			function($scope, $http) {
+				$scope.tabNavigationMenuClassMain = new tabNavigationMenuClass(
+						"#mainTab");
+				$scope.tabNavigationMenuClassMain.init();
+
+				$scope.tabNavigationMenuClassJob = new tabNavigationMenuClass(
+						"#jobTab");
+				$scope.tabNavigationMenuClassJob.init();
+
+				$scope.logEvents = [];
+				$scope.jobLists = [];
+				$scope.jobGroupLists = [];
+				
+				$scope.loadLog = function() {
+					$http.get('api/logging.json').then(
+							function(r) {
+								$scope.logEvents = [];
+								angular.forEach(r.data, function(value, key) {
+									var message = value.message.message;
+									// except ApHttpClient logger
+									if (message.indexOf('ApHttpClient') == -1) {
+										var date = new Date(value.timeMillis);
+										$scope.logEvents.unshift({
+											message : message,
+											timestamp : moment(date).format(
+													"YYYY/MM/DD HH:mm:ss")
+										});
+									}
+								});
+
+								console.log($scope.logEvents);
 							});
+				};
+
+				$scope.loadJobLists = function() {
+					$http.get('api/job.json').then(function(r) {
+						$scope.jobLists = [];
+						angular.forEach(r.data.jobs, function(value, key) {
+							$scope.jobLists.push(value)
+						});
+					});
+				};
+
+				$scope.loadJobGroupLists = function() {
+					$http.get('api/jobgroup.json').then(function(r) {
+						$scope.jobGroupLists = [];
+						angular.forEach(r.data.jobGroups, function(value, key) {
+							$scope.jobGroupLists.push(value)
+						});
+						
+						if($scope.jobLists.length == 0) {
+							$scope.loadJobLists();
 						}
 					});
-
-					console.log($scope.logEvents);
-				});
-			};
-			$scope.loadJobLists = function() {
-				$http.get('api/job.json')
-				.then(function(r) {
-					$scope.jobLists = [];
-					angular.forEach(r.data.jobs, function(value, key) {
-						$scope.jobLists.push(value)
+				};
+				
+				$scope.getJobGroupRelated = function(jobGroupId) {
+					var count = 0;
+					angular.forEach($scope.jobLists, function(value, key) {
+						if(value.groupId == jobGroupId) {
+							count++;
+						}
 					});
-
-					console.log($scope.jobLists);
-				});
-			};
-
-			$scope.click_menu_nav = function($event) {
-				var el = $event.currentTarget;
-				$scope.tabNavigationMenuClass.selection(el);
-				if (el.href.indexOf('#log') >= 0) {
-					$scope.loadLog();
-				}if (el.href.indexOf('#schedule') >= 0) {
-					$scope.loadJobLists();
+					return count;
 				}
-			}
-		});
-	</script>
+			});
+</script>
 </head>
 <body>
 
@@ -112,165 +148,256 @@
 
 	<div class="content">
 		<section ng-controller="apController">
-			<div class="tab_navigation">
+			<div id="mainTab" class="tab_navigation">
 				<div class="tab_navigation_menu">
-					<a ng-click="click_menu_nav($event)" href="#dashboard" class="active">Dashboard</a>
-					<a ng-click="click_menu_nav($event)" href="#log" class="">Log Activity</a>
-					<a ng-click="click_menu_nav($event)" href="#schedule" class="">Schedule</a>
-					<a ng-click="click_menu_nav($event)" href="#configuration" class="">Configuration</a>
+					<a href="#dashboard" class="active">Dashboard</a> <a
+						ng-click="loadLog()" href="#log" class="">Log Activity</a> <a
+						href="#schedule" class="">Schedule</a> <a href="#configuration"
+						class="">Configuration</a>
 				</div>
 				<div class="tab_navigation_content">
 					<div id="dashboard" class="active">
 						<h2>Dashboard</h2>
 					</div>
 					<div id="log" class="">
-						Current log activity :
+						<h3>Current log activity :</h3>
+						<p>
+							<a class="button" href="#" ng-click="loadLog()">Reload
+							Log</a>
+						</p>
 						<div class="log_list_container">
 							<ul class="log_list">
-								<li ng-repeat="log in logEvents">{{ log.timestamp }} - {{ log.message }}</li>
+								<li ng-repeat="log in logEvents">{{ log.timestamp }} - {{
+									log.message }}</li>
 							</ul>
 						</div>
 					</div>
 					<div id="schedule" class="">
-						<table class="job_schedule" border="1" cellpadding="0" cellspacing="0">
-							<thead>
-								<th>Id</th>
-								<th>groupId</th>
-								<th>Title</th>
-								<th>Description</th>
-								<th>Scheduled</th>
-							</thead>
-							<tbody>
-								<tr ng-repeat="job in jobLists">
-									<td>{{ job.id }}</td>
-									<td>{{ job.groupId }}</td>
-									<td>{{ job.title }}</td>
-									<td>{{ job.description }}</td>
-									<td>{{ job.date == "" ? "Everyday" : job.date }} | {{ job.time }}</td>
-								</tr>
-							</tbody>
-						</table>
+
+						<div id="jobTab" class="tab_navigation vertical">
+							<div class="tab_navigation_menu">
+								<a href="#alljob" class="active">All Job</a> <a href="#jobgroup">job
+									group</a>
+							</div>
+							<div class="tab_navigation_content">
+								<div id="alljob" class="active">
+									<h3>Job list</h3>
+									<p>
+										<a class="button" href="#" ng-click="loadJobLists()">Reload
+										Schedule</a>
+									</p>
+									<table class="job_schedule" border="1" cellpadding="0"
+										cellspacing="0">
+										<thead>
+											<th>Id</th>
+											<th>groupId</th>
+											<th>Title</th>
+											<th>Scheduled</th>
+										</thead>
+										<tbody>
+											<tr ng-repeat="job in jobLists" class="{{ job.active == 1 ? 'active' : 'not-active' }}">
+												<td>{{ job.id }}</td>
+												<td>{{ job.groupId }}</td>
+												<td>{{ job.title }}</td>
+												<td>{{ job.date == "" ? "Everyday" : job.date }} | {{
+													job.time }}</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+								<div id="jobgroup">
+									<h3>Job group</h3>
+									<p>
+										<a class="button" href="#" ng-click="loadJobGroupLists()">Reload
+										Jobgroup</a>
+									</p>
+									<table class="job_schedule" border="1" cellpadding="0"
+										cellspacing="0">
+										<thead>
+											<th>groupId</th>
+											<th>Title</th>
+											<th>Job</th>
+										</thead>
+										<tbody>
+											<tr ng-repeat="job in jobGroupLists">
+												<td>{{ job.id }}</td>
+												<td>{{ job.title }}</td>
+												<td>{{ getJobGroupRelated(job.id) }}</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
 					</div>
-					<div id="configuration" class="">
-						Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-						tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-						quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-						consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-						cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-						proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-					</div>
+					<div id="configuration" class="">Lorem ipsum dolor sit amet,
+						consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
+						labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+						nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+						consequat. Duis aute irure dolor in reprehenderit in voluptate
+						velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
+						occaecat cupidatat non proident, sunt in culpa qui officia
+						deserunt mollit anim id est laborum.</div>
 				</div>
 			</div>
 		</section>
 	</div>
 
-	<footer>
-		Copyright © 2018 Ap scheduler.
-	</footer>
+	<footer> Copyright © 2018 Ap scheduler. </footer>
 
 	<style>
-		h1 {
-			font-size: 15pt;
-		}
+h1 {
+	font-size: 15pt;
+}
 
-		h2 {
-			font-size: 14pt;
-		}
+h2 {
+	font-size: 14pt;
+}
 
-		h3 {
-			font-size: 13pt;
-		}
+h3 {
+	font-size: 13pt;
+}
 
-		html, body {
-			margin: 0;
-			padding: 0;
-			font-family: Helvetica, Arial;
-		}
+html, body {
+	margin: 0;
+	padding: 0;
+	font-family: Helvetica, Arial;
+}
 
-		body {
-			background: #333;
-		}
+body {
+	background: #333;
+}
 
-		.content {
-			background-color: #fff;
-			padding: 10px 0;
-		}
+.content {
+	background-color: #fff;
+	padding: 10px 0;
+}
 
-		.header_wrapper {
-			background-color: #333;
-			width: 100%;
-			display: block;
-		}
+.header_wrapper {
+	background-color: #333;
+	width: 100%;
+	display: block;
+}
 
-		.header_title {
-			color: #fff;
-			text-align: center;
-			padding: 20px 0;
-			margin: 0px auto;
-		}
+.header_title {
+	color: #fff;
+	text-align: center;
+	padding: 20px 0;
+	margin: 0px auto;
+}
 
-		.tab_navigation {
-			margin: 20px;
-		}
+.tab_navigation {
+	margin: 20px;
+}
 
-		.tab_navigation_menu a {
-			display: block;
-			float: left;
-			margin: 0;
-			margin-bottom: -1px;
-			padding: 5px 10px;
-			text-decoration: none;
-			color: #111;
-			border: 1px solid #bbb;
-			border-bottom: none;
-			background: #ccc;
-		}
+.tab_navigation_menu a {
+	display: block;
+	float: left;
+	margin: 0;
+	margin-bottom: -1px;
+	padding: 5px 10px;
+	text-decoration: none;
+	color: #111;
+	border: 1px solid #bbb;
+	border-bottom: none;
+	background: #ccc;
+}
 
-		.tab_navigation_menu a.active {
-			background: #fff;
+.tab_navigation_menu a.active {
+	background: #fff;
+}
 
-		}
+.tab_navigation_menu:after {
+	content: " ";
+	clear: both;
+	height: 0;
+	display: block;
+}
 
-		.tab_navigation_menu:after {
-			content: " ";
-			clear: both;
-			height: 0;
-			display: block;
-		}
+.tab_navigation_content {
+	padding: 10px;
+	border: 1px solid #bbb;
+	min-height: 300px;
+}
 
-		.tab_navigation_content {
-			padding: 10px;
-			border: 1px solid #bbb;
-			min-height: 300px;	
-		}
+.tab_navigation_content>div {
+	display: none;
+}
 
-		.tab_navigation_content > div {
-			display: none;
-		}
+.tab_navigation_content>div.active {
+	display: block;
+}
 
-		.tab_navigation_content > div.active {
-			display: block;
-		}
+.tab_navigation.vertical .tab_navigation_menu {
+	width: 20%;
+	float: left;
+}
 
-		footer {
-			background: #333;
-			color: #fff;
-			bottom: 0;
-			width: 100%;
-			display: block;
-			height: 30px;
-			padding-top: 10px;
-			text-align: center;
-			position: relative;
-		}
-		
-		table.job_schedule {
-			width: 100%;
-		}
-		
-		table.job_schedule tr td {
-			padding: 2.5px
-		}
-	</style>
+.tab_navigation.vertical .tab_navigation_menu>a {
+	display: block;
+	width: 100%;
+	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+	-moz-box-sizing: border-box; /* Firefox, other Gecko */
+	box-sizing: border-box; /* Opera/IE 8+ */
+	margin-bottom: 0;
+	border-bottom: 1px solid #bbb;
+}
+
+.tab_navigation.vertical .tab_navigation_content {
+	width: 80%;
+	float: left;
+	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+	-moz-box-sizing: border-box; /* Firefox, other Gecko */
+	box-sizing: border-box; /* Opera/IE 8+ */
+	position: relative;
+}
+
+.tab_navigation.vertical::after {
+	content: "";
+	height: 0;
+	clear: both;
+	display: block;
+}
+
+footer {
+	background: #333;
+	color: #fff;
+	bottom: 0;
+	width: 100%;
+	display: block;
+	height: 30px;
+	padding-top: 10px;
+	text-align: center;
+	position: relative;
+}
+
+table.job_schedule {
+	width: 100%;
+}
+
+table.job_schedule tr td {
+	padding: 2.5px
+}
+
+table.job_schedule tr.active {
+	color: blue;
+}
+
+table.job_schedule tr.not-active {
+	color: red;
+}
+
+.button {
+	background: #cbdd23;
+	border: none;
+	color: #222;
+	padding: 5px 10px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
+	border-radius: 5px;
+}
+</style>
 </body>
 </html>
