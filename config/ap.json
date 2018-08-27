@@ -1,0 +1,82 @@
+{
+	"jobs" : [
+		{
+			"id" : "JB00A1",
+			"groupId" : "JB00A",
+			"title" : "Sample job #1",
+			"description" : "Description of sample job #1",
+			"category" : "Test",
+			"active" : True,
+			"time" : "12:58",
+			"day" : " ",
+			"date" : "",
+			"duedate" : "",
+			"command" : "cmd /c start E:\\script\\JB00A1.bat",
+			"presentCommand" : "job:JB00A2" 
+		},
+		{
+			"id" : "JB00A2",
+			"groupId" : "JB00A",
+			"title" : "Sample job #2",
+			"description" : "Description of sample job #2",
+			"category" : "Test",
+			"active" : True,
+			"time" : "",
+			"day" : "",
+			"date" : "",
+			"duedate" : "",
+			"command" : "cmd /c start E:\\script\\JB00A2.bat",
+			"presentCommand" : "job:JB00A3"
+		},
+		{
+			"id" : "JB00A3",
+			"groupId" : "JB00A",
+			"title" : "Sample job #3",
+			"description" : "Description of sample job #3",
+			"category" : "Test",
+			"active" : True,
+			"time" : "",
+			"day" : "",
+			"date" : "",
+			"duedate" : "",
+			"command" : "cmd /c start E:\\script\\JB00A3.bat",
+			"presentCommand" : ""
+		},
+		{
+			"id" : "XCN001",
+			"groupId" : "",
+			"title" : "Standalone job",
+			"description" : "Description of standalone job",
+			"category" : "Test",
+			"active" : True,
+			"time" : "13:24",
+			"day" : "",
+			"date" : "",
+			"duedate" : "",
+			"command" : "cmd /c start E:\\script\\JB00A1.bat",
+			"presentCommand" : ""
+		},
+		{
+			"id" : "XCN002",
+			"groupId" : "",
+			"title" : "Standalone job (Not active)",
+			"description" : "Description of standalone job",
+			"category" : "Test",
+			"active" : False,
+			"time" : "13:22",
+			"day" : "",
+			"date" : "",
+			"duedate" : "",
+			"command" : "cmd /c start E:\\script\\JB00A1.bat",
+			"presentCommand" : ""
+		}
+	],
+	"jobGroups" : [
+		{
+			"id" : "JB00A",
+			"title" : "Job Group JB00A",
+			"description" : "Job Group purpose for Testing only"
+		}
+	]
+
+}

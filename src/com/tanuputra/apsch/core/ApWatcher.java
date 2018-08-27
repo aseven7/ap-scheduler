@@ -1,44 +1,92 @@
 package com.tanuputra.apsch.core;
+
 import java.io.File;
+import java.util.Properties;
 
 import org.apache.logging.log4j.Logger;
 
 import com.tanuputra.apsch.runtime.ApMain;
+import com.tanuputra.apsch.util.ApUtil;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class ApWatcher.
+ */
 public class ApWatcher implements Runnable {
+	
+	/** The logger. */
 	// Logger
 	private static Logger _logger;
+	
+	/** The is canceled flag. */
 	// Cancel flag
 	boolean _isCanceledFlag = true;
-	// Timestamps
-	private static Long timestampAp;
-
-	public ApWatcher(Logger logger) {
-		_logger = logger;
-	}
-
-	public static void checkApFile() {
-		String apFilePath = "E:\\ap.xml";
-		// conclude AP file path
-		String userFileDir = System.getProperty("user.dir");
-		userFileDir += "\\ap.xml";
-		userFileDir = userFileDir.replace("\\", "/");
-		File file = new File(userFileDir);
-		if (file.exists() && file.isFile()) {
-			apFilePath = userFileDir;
-		}
-		
-		
-		File apFile = new File(apFilePath);
-		if (apFile.lastModified() != ApWatcher.timestampAp) {
-			ApMain.restartApAgent();
-		}
-	}
 	
+	/** The timestamp ap. */
+	// Time stamp
+	private static Long timestampAp = 0L;
+	
+	/** The ap prop. */
+	// Time stamp
+	private static Properties _apProp;
+
+	/**
+	 * Instantiates a new ap watcher.
+	 *
+	 * @param logger the logger
+	 */
+	public ApWatcher(Logger logger) {
+		// Logger
+		_logger = logger;
+		
+		// Properties
+		_apProp = ApUtil.getApProp();
+
+		// Ap File Path
+		String apFilePath = _apProp.getProperty("ap.jobpath");
+
+		// File path
+		File apFile = new File(apFilePath);
+
+		// Check modified file
+		if(apFile.exists() && apFile != null) {
+			setCurrentApTimestamp(apFile.lastModified());
+		}
+	}
+
+	/**
+	 * Check ap file.
+	 */
+	public static void checkApFile() {
+		// Ap File Path
+		String apFilePath = _apProp.getProperty("ap.jobpath");
+
+		// File path
+		File apFile = new File(apFilePath);
+		// Check modified file
+		if(apFile.exists() && apFile != null) {
+			if (apFile.lastModified() != timestampAp) {
+				// Reload time stamp
+				timestampAp = apFile.lastModified();
+				// Restart agent
+				ApMain.restartApAgent();
+			}
+		}
+	}
+
+	/**
+	 * Sets the current ap timestamp.
+	 *
+	 * @param timestampAp the new current ap timestamp
+	 */
 	public static void setCurrentApTimestamp(Long timestampAp) {
+		// Time stamp
 		ApWatcher.timestampAp = timestampAp;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Runnable#run()
+	 */
 	@Override
 	public void run() {
 		try {

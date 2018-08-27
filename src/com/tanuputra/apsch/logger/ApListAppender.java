@@ -18,19 +18,43 @@ import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class ApListAppender.
+ */
 @Plugin(name = "ApListAppender", category = "Core", elementType = "appender", printObject = true)
 public class ApListAppender extends AbstractAppender {
+	
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 4967423614250129771L;
+	
+	/** The timestamp. */
 	public static long timestamp = 0;
+	
+	/** The events. */
 	public static List<LogEvent> events = new ArrayList<LogEvent>();
 
+	/** The rw lock. */
 	private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
+	
+	/** The read lock. */
 	private final Lock readLock = rwLock.readLock();
 
+	/**
+	 * Instantiates a new ap list appender.
+	 *
+	 * @param name the name
+	 * @param filter the filter
+	 * @param layout the layout
+	 * @param ignoreExceptions the ignore exceptions
+	 */
 	protected ApListAppender(String name, Filter filter, Layout<? extends Serializable> layout, final boolean ignoreExceptions) {
 		super(name, filter, layout, ignoreExceptions);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.apache.logging.log4j.core.Appender#append(org.apache.logging.log4j.core.LogEvent)
+	 */
 	@Override
 	public void append(LogEvent event) {
 		readLock.lock();
@@ -47,6 +71,14 @@ public class ApListAppender extends AbstractAppender {
 
 	}
 
+	/**
+	 * Creates the appender.
+	 *
+	 * @param name the name
+	 * @param layout the layout
+	 * @param filter the filter
+	 * @return the ap list appender
+	 */
 	@PluginFactory
 	public static ApListAppender createAppender(@PluginAttribute("name") String name,
 			@PluginElement("Layout") Layout<? extends Serializable> layout, @PluginElement("Filter") Filter filter) {

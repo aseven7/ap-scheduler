@@ -92,7 +92,7 @@
 						$scope.loadJobLists = function() {
 							$http.get('api/job.json').then(function(r) {
 								$scope.jobLists = [];
-								angular.forEach(r.data.jobs, function(value, key) {
+								angular.forEach(r.data, function(value, key) {
 									$scope.jobLists.push(value)
 								});
 							});
@@ -100,7 +100,7 @@
 						$scope.loadJobGroupLists = function() {
 							$http.get('api/jobgroup.json').then(function(r) {
 								$scope.jobGroupLists = [];
-								angular.forEach(r.data.jobGroups, function(value, key) {
+								angular.forEach(r.data, function(value, key) {
 									$scope.jobGroupLists.push(value)
 								});
 								if ($scope.jobLists.length == 0) {
