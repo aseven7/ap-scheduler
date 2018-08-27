@@ -103,8 +103,6 @@ public class ApUtil {
 				newJob.disable();
 			}
 			jobManager.add(newJob);
-			System.out.println(newJob.getId() +  " -- Active : " + job.getActive());
-			System.out.println(job.getDay() + " --- " + job.getTime() + " --- " + job.getDate() + " --- " + job.getDuedate());
 		}
 
 		return jobManager;
